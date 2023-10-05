@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export type NextRequestHandler = (req: NextRequest, ctx: { params: {} }) => any;
+export type NextRequestHandler<Params = any> = (
+  req: NextRequest,
+  ctx: { params: Params }
+) => any;
 
 export type CustomRequest<
   Params = any,

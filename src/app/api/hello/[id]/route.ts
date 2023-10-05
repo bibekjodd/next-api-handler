@@ -35,11 +35,15 @@ const thirdMiddleware: CustomRequestHandler<
 };
 
 export const GET: NextRequestHandler = async (req, ctx) => {
-  const handler = new RequestHandler(req, ctx);
-  return handler.run(firstMiddleware, secondMiddleware, thirdMiddleware);
+  const handler = new RequestHandler<{ id: string }>(req, ctx);
+  handler.use(firstMiddleware, secondMiddleware, thirdMiddleware);
+  return handler.response();
 };
 
 export const POST: NextRequestHandler = async (req, ctx) => {
   const handler = new RequestHandler(req, ctx);
-  return handler.run(firstMiddleware, secondMiddleware, thirdMiddleware);
+  handler.use(firstMiddleware);
+  handler.use(secondMiddleware);
+  handler.use(thirdMiddleware);
+  return handler.response();
 };
