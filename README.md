@@ -1,6 +1,6 @@
 ## Next Api Handler
 
-Easy to use ExpressJS like api handler for Next Api Routes
+Easy to use ExpressJS like api handler for Next Api Routes with Error wrapped middleware
 
 ### Install Project Dependencies
 
