@@ -3,15 +3,17 @@ import { NextRequest, NextResponse } from "next/server";
 export type NextRequestHandler = (req: NextRequest, ctx: { params: {} }) => any;
 
 export type CustomRequest<
-  Params = unknown,
-  Body = unknown,
-  Query = unknown
+  Params = any,
+  ReqBody = any,
+  Query = any
 > = NextRequest & {
   params: Params;
-  parsedBody: Body;
+  parsedBody: ReqBody;
+  query: Query;
 };
 
-export type CustomRequestHandler<Params = unknown, Body = unknown> = (
-  req: CustomRequest<Params, Body, Query>,
-  next: (err?: unknown) => Promise<void>
+export type CustomRequestHandler<Params = any, ReqBody = any, Query = any> = (
+  req: CustomRequest<Params, ReqBody, Query>,
+  res: typeof NextResponse,
+  next: () => Promise<void>
 ) => any;
