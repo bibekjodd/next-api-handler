@@ -8,7 +8,7 @@ Easy to use ExpressJS like api handler for Next Api Routes with Error wrapped mi
 npm i qs @types/qs
 ```
 
-- set `target` at least `es2015` on `tsconfig.json` to allow `private variables`
+- set `target` at least `es2015` on `tsconfig.json` to allow `private variables` on `RequestHandler` class
 
 ```json
 "compilerOptions":{
