@@ -15,6 +15,25 @@ import CustomError from "@/lib/customError";
 import RequestHandler from "@/lib/requestHandler";
 import { CustomRequestHandler, NextRequestHandler } from "@/types/api";
 
+type Params = {
+  id: string;
+};
+
+type ReqBody = Partial<{
+  email: string;
+  password: string;
+}>;
+
+type Query = Partial<{
+  search: string;
+}>;
+
+type ResBody = {
+  body: ReqBody;
+  paramsId: string;
+  parsedQuery: Query;
+};
+
 const firstMiddleware: CustomRequestHandler = async (req, res, next) => {
   console.log("first middleware");
   const start = Date.now();
@@ -29,16 +48,14 @@ const secondMiddleware: CustomRequestHandler = async (req, res, next) => {
       400
     );
   }
-
   console.log("second middleware");
   await next();
 };
 
-const thirdMiddleware: CustomRequestHandler<
-  { id: string },
-  { email: string; password: string },
-  { search: string }
-> = (req, res) => {
+const thirdMiddleware: CustomRequestHandler<Params, ResBody, ReqBody, Query> = (
+  req,
+  res
+) => {
   console.log("third middleware");
   return res.json({
     body: req.parsedBody,
@@ -48,7 +65,7 @@ const thirdMiddleware: CustomRequestHandler<
 };
 
 export const GET: NextRequestHandler = async (req, ctx) => {
-  const handler = new RequestHandler<{ id: string }>(req, ctx);
+  const handler = new RequestHandler<Params, ResBody, ReqBody, Query>(req, ctx);
   handler.use(firstMiddleware, secondMiddleware, thirdMiddleware);
   return handler.response();
 };
@@ -70,11 +87,11 @@ import { CustomRequest, CustomRequestHandler } from "@/types/api";
 import { NextRequest, NextResponse } from "next/server";
 import CustomError from "./customError";
 
-class RequestHandler<Params = any, ReqBody = any, Query = any> {
+class RequestHandler<Params = any, ResBody = any, ReqBody = any, Query = any> {
   #index = 0;
   #res = undefined as NextResponse | undefined;
   #req = {} as CustomRequest<Params, ReqBody, Query>;
-  #handlers = [] as CustomRequestHandler<Params, ReqBody, Query>[];
+  #handlers = [] as CustomRequestHandler<Params, ResBody, ReqBody, Query>[];
 
   constructor(req: NextRequest, ctx?: { params: Params }) {
     this.#req = req as CustomRequest<Params, ReqBody, Query>;
@@ -84,7 +101,7 @@ class RequestHandler<Params = any, ReqBody = any, Query = any> {
     this.#req.query = query as Query;
   }
 
-  use(...handlers: CustomRequestHandler<Params, ReqBody, Query>[]) {
+  use(...handlers: CustomRequestHandler<Params, ResBody, ReqBody, Query>[]) {
     this.#handlers = [...this.#handlers, ...handlers];
   }
 
@@ -169,11 +186,20 @@ export type CustomRequest<
   query: Query;
 };
 
-export type CustomRequestHandler<Params = any, ReqBody = any, Query = any> = (
+export type CustomRequestHandler<
+  Params = any,
+  ResBody = any,
+  ReqBody = any,
+  Query = any
+> = (
   req: CustomRequest<Params, ReqBody, Query>,
   res: typeof NextResponse,
   next: () => Promise<void>
-) => any;
+) =>
+  | NextResponse<ResBody>
+  | Promise<NextResponse<ResBody> | void | undefined>
+  | void
+  | undefined;
 ```
 
 ## Custom Error
