@@ -2,6 +2,25 @@ import CustomError from "@/lib/customError";
 import RequestHandler from "@/lib/requestHandler";
 import { CustomRequestHandler, NextRequestHandler } from "@/types/api";
 
+type Params = {
+  id: string;
+};
+
+type ReqBody = Partial<{
+  email: string;
+  password: string;
+}>;
+
+type Query = Partial<{
+  search: string;
+}>;
+
+type ResBody = {
+  body: ReqBody;
+  paramsId: string;
+  parsedQuery: Query;
+};
+
 const firstMiddleware: CustomRequestHandler = async (req, res, next) => {
   console.log("first middleware");
   const start = Date.now();
@@ -16,16 +35,14 @@ const secondMiddleware: CustomRequestHandler = async (req, res, next) => {
       400
     );
   }
-
   console.log("second middleware");
   await next();
 };
 
-const thirdMiddleware: CustomRequestHandler<
-  { id: string },
-  { email: string; password: string },
-  { search: string }
-> = (req, res) => {
+const thirdMiddleware: CustomRequestHandler<Params, ResBody, ReqBody, Query> = (
+  req,
+  res
+) => {
   console.log("third middleware");
   return res.json({
     body: req.parsedBody,
@@ -35,7 +52,7 @@ const thirdMiddleware: CustomRequestHandler<
 };
 
 export const GET: NextRequestHandler = async (req, ctx) => {
-  const handler = new RequestHandler<{ id: string }>(req, ctx);
+  const handler = new RequestHandler<Params, ResBody, ReqBody, Query>(req, ctx);
   handler.use(firstMiddleware, secondMiddleware, thirdMiddleware);
   return handler.response();
 };

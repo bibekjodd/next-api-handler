@@ -3,11 +3,11 @@ import { CustomRequest, CustomRequestHandler } from "@/types/api";
 import { NextRequest, NextResponse } from "next/server";
 import CustomError from "./customError";
 
-class RequestHandler<Params = any, ReqBody = any, Query = any> {
+class RequestHandler<Params = any, ResBody = any, ReqBody = any, Query = any> {
   #index = 0;
   #res = undefined as NextResponse | undefined;
   #req = {} as CustomRequest<Params, ReqBody, Query>;
-  #handlers = [] as CustomRequestHandler<Params, ReqBody, Query>[];
+  #handlers = [] as CustomRequestHandler<Params, ResBody, ReqBody, Query>[];
 
   constructor(req: NextRequest, ctx?: { params: Params }) {
     this.#req = req as CustomRequest<Params, ReqBody, Query>;
@@ -17,7 +17,7 @@ class RequestHandler<Params = any, ReqBody = any, Query = any> {
     this.#req.query = query as Query;
   }
 
-  use(...handlers: CustomRequestHandler<Params, ReqBody, Query>[]) {
+  use(...handlers: CustomRequestHandler<Params, ResBody, ReqBody, Query>[]) {
     this.#handlers = [...this.#handlers, ...handlers];
   }
 

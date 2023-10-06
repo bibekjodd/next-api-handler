@@ -15,8 +15,17 @@ export type CustomRequest<
   query: Query;
 };
 
-export type CustomRequestHandler<Params = any, ReqBody = any, Query = any> = (
+export type CustomRequestHandler<
+  Params = any,
+  ResBody = any,
+  ReqBody = any,
+  Query = any
+> = (
   req: CustomRequest<Params, ReqBody, Query>,
   res: typeof NextResponse,
   next: () => Promise<void>
-) => any;
+) =>
+  | NextResponse<ResBody>
+  | Promise<NextResponse<ResBody> | void | undefined>
+  | void
+  | undefined;
