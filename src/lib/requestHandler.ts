@@ -48,16 +48,7 @@ class RequestHandler<Params = any, ReqBody = any, Query = any> {
         if (res) this.#res = res;
       }
     } catch (err: unknown) {
-      let message = "Internal Server Error";
-      let statusCode = 500;
-      if (err instanceof Error) {
-        message = err.message || message;
-      }
-      if (err instanceof CustomError) {
-        statusCode = err.statusCode || statusCode;
-        message = err.message;
-      }
-      this.#res = NextResponse.json({ message }, { status: statusCode });
+      this.#res = handleError(err);
     }
   }
 }
@@ -76,4 +67,16 @@ function decodeSearchParams<Query = unknown>(url: string): Query {
   const { search } = new URL(url);
   const query = qs.parse(search.substring(1));
   return query as Query;
+}
+
+function handleError(err: unknown): NextResponse {
+  let message = "Internal Server Error";
+  let statusCode = 500;
+  if (err instanceof Error) {
+    message = err.message || message;
+  }
+  if (err instanceof CustomError) {
+    statusCode = err.statusCode || statusCode;
+  }
+  return NextResponse.json({ message }, { status: statusCode });
 }
