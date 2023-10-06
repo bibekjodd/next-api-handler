@@ -2,10 +2,18 @@
 
 Easy to use ExpressJS like api handler for Next Api Routes with Error wrapped middleware.
 
-### Install Project Dependencies
+### install project dependencies
 
 ```bash
 npm i qs @types/qs
+```
+
+- set `target` at least `es2015` on `tsconfig.json` to allow `private variables`
+
+```json
+"compilerOptions":{
+  "target": "es2015",
+}
 ```
 
 ### api route /api/hello/:id
